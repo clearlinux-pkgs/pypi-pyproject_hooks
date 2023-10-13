@@ -5,7 +5,7 @@
 #
 Name     : pypi-pyproject_hooks
 Version  : 1.0.0
-Release  : 3
+Release  : 4
 URL      : https://files.pythonhosted.org/packages/25/c1/374304b8407d3818f7025457b7366c8e07768377ce12edfe2aa58aa0f64c/pyproject_hooks-1.0.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/25/c1/374304b8407d3818f7025457b7366c8e07768377ce12edfe2aa58aa0f64c/pyproject_hooks-1.0.0.tar.gz
 Summary  : Wrappers to call pyproject.toml-based build backend hooks.
