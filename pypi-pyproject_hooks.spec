@@ -4,7 +4,7 @@
 #
 Name     : pypi-pyproject_hooks
 Version  : 1.0.0
-Release  : 1
+Release  : 2
 URL      : https://files.pythonhosted.org/packages/25/c1/374304b8407d3818f7025457b7366c8e07768377ce12edfe2aa58aa0f64c/pyproject_hooks-1.0.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/25/c1/374304b8407d3818f7025457b7366c8e07768377ce12edfe2aa58aa0f64c/pyproject_hooks-1.0.0.tar.gz
 Summary  : Wrappers to call pyproject.toml-based build backend hooks.
@@ -15,6 +15,7 @@ Requires: pypi-pyproject_hooks-python = %{version}-%{release}
 Requires: pypi-pyproject_hooks-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
 BuildRequires : pypi(flit_core)
+BuildRequires : pypi(installer)
 BuildRequires : pypi(py)
 BuildRequires : pypi-pluggy
 BuildRequires : pypi-pytest
@@ -78,16 +79,7 @@ export FCFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -
 export FFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
 export CXXFLAGS="$CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
 export MAKEFLAGS=%{?_smp_mflags}
-python3 -m build --wheel --skip-dependency-check --no-isolation
-pushd ../buildavx2/
-export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
-export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
-export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
-export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3 "
-export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3 "
-python3 -m build --wheel --skip-dependency-check --no-isolation
-
-popd
+python3 -m flit_core.wheel
 
 %install
 export MAKEFLAGS=%{?_smp_mflags}
@@ -97,19 +89,7 @@ cp %{_builddir}/pyproject_hooks-%{version}/LICENSE %{buildroot}/usr/share/packag
 cp %{_builddir}/pyproject_hooks-%{version}/tests/samples/pkg1/pkg1-0.5.dist-info/LICENSE %{buildroot}/usr/share/package-licenses/pypi-pyproject_hooks/b2f7e71b77f14f21cd693e1c6fbe7236a8deac5f || :
 cp %{_builddir}/pyproject_hooks-%{version}/tests/samples/pkg2/pkg2-0.5.dist-info/LICENSE %{buildroot}/usr/share/package-licenses/pypi-pyproject_hooks/b2f7e71b77f14f21cd693e1c6fbe7236a8deac5f || :
 cp %{_builddir}/pyproject_hooks-%{version}/tests/samples/pkg3/pkg3-0.5.dist-info/LICENSE %{buildroot}/usr/share/package-licenses/pypi-pyproject_hooks/b2f7e71b77f14f21cd693e1c6fbe7236a8deac5f || :
-pip install --root=%{buildroot} --no-deps --ignore-installed dist/*.whl
-echo ----[ mark ]----
-cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
-echo ----[ mark ]----
-pushd ../buildavx2/
-export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
-export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
-export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
-export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3 "
-export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3 "
-pip install --root=%{buildroot}-v3 --no-deps --ignore-installed dist/*.whl
-popd
-/usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
+python3 -m installer --destdir=%{buildroot} dist/*.whl
 
 %files
 %defattr(-,root,root,-)
